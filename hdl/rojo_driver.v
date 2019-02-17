@@ -33,11 +33,12 @@ module mfp_ahb_rojo(
     input      [ 31          :0] HWDATA,
     input                        HWRITE,
     input                        HSEL,
+    output reg [ 31          :0] HRDATA,
 	
-	output		IO_BotCtrl,
-	input		IO_BotInfo,
-	output		IO_INT_ACK,
-	input		IO_BotUpdt_Sync,
+	output	reg [7:0]	IO_BotCtrl,
+	input	 [31:0]	IO_BotInfo,
+	output	reg [0:0]	IO_INT_ACK,
+	input	 [0:0]	IO_BotUpdt_Sync
 );
 	
     reg	[31:0]  HRDATA_int;
@@ -61,10 +62,7 @@ module mfp_ahb_rojo(
     wire        we;      
 	
 	
-	assign IO_BotCtrl = IO_BotCtrl_reg;
-	assign IO_BotInfo = IO_BotInfo_reg;
-	assign IO_BotUpdt_Sync = IO_BotUpdt_Sync_reg;
-	assign IO_INT_ACK = IO_INT_ACK_reg;
+
 	
 	// delay HADDR, HWRITE, HSEL, and HTRANS to align with HWDATA for writing
 	always @ (posedge HCLK) 
@@ -84,14 +82,14 @@ module mfp_ahb_rojo(
 		if (~HRESETn) 
 			// Default values to be assigned upon reset
 			begin
-				IO_BotCtrl_reg = 8'b0;
-				IO_INT_ACK_reg = 1'b0;
+				IO_BotCtrl = 8'b0;
+				IO_INT_ACK = 1'b0;
 			end 
-		else if (we)
+		else 
 			begin
 			case (HADDR_d)
-				`H_BOTCNTRL_ADDR: IO_BotCtrl_reg <= HWDATA[7:0];
-				`H_INTACK_ADDR:   IO_INT_ACK_reg <= HWDATA [0:0];
+				`H_BOTCNTRL_ADDR: IO_BotCtrl <= HWDATA[7:0];
+				`H_INTACK_ADDR:   IO_INT_ACK <= HWDATA [0:0];
 			endcase
 			end
 		end	 
@@ -108,9 +106,10 @@ module mfp_ahb_rojo(
 		else
 			begin
 			case (HADDR)
-				`H_BOTINFO_ADDR: HRDATA <= IO_BotInfo_reg;
-				`H_BOTUPDT_ADDR: HRDATA <= IO_BotUpdt_Sync_reg;
+				`H_BOTINFO_ADDR: HRDATA <= IO_BotInfo;
+				`H_BOTUPDT_ADDR: HRDATA <= IO_BotUpdt_Sync;
 				default:    HRDATA <= 32'h00000000;
 			endcase
 			end
 		end
+endmodule

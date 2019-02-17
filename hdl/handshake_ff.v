@@ -19,9 +19,9 @@
 
 module handshake_ff(
 	input clk50,
-	input IO_INT_ACK,
-	input IO_BotUpdt,
-	output IO_BotUpdt_Sync
+	input [0:0] IO_INT_ACK,
+	input [0:0] IO_BotUpdt,
+	output reg[0:0] IO_BotUpdt_Sync
 );
 
 

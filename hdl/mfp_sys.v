@@ -28,11 +28,11 @@ module mfp_sys(
                     output 	   [7:0]	IO_AN,
                     output                         IO_CA, IO_CB, IO_CC, IO_CD, IO_CE, IO_CF, IO_CG,
                     output                         IO_DP,
-					output		IO_BotCtrl,
-					input		IO_BotInfo,
-					output		IO_INT_ACK,
-					input		IO_BotUpdt_Sync,
-                    input                   UART_RX);
+                    input                          UART_RX,
+                    output     [7:0]               IO_BotCtrl,
+                    input       [31:0]             IO_BotInfo,
+                    output                         IO_INT_ACK,
+                    input                          IO_BotUpdt_Sync);
 
 
 
@@ -312,11 +312,15 @@ module mfp_sys(
         .IO_CE(IO_CE), 
         .IO_CF(IO_CF), 
         .IO_CG(IO_CG),
-        .IO_DP(IO_DP),                                       
+        .IO_DP(IO_DP),
         .IO_Switch              (   IO_Switch               ),
         .IO_PB                  (   IO_PB                   ),
         .IO_LED                 (   IO_LED                  ),
         .UART_RX                (   UART_RX                 ), 
+        .IO_BotCtrl(IO_BotCtrl),
+        .IO_BotInfo(IO_BotInfo),
+        .IO_INT_ACK(IO_INT_ACK),
+        .IO_BotUpdt_Sync(IO_BotUpdt_Sync),
         .MFP_Reset_serialload   (   MFP_Reset_serialload    )
     );
 
