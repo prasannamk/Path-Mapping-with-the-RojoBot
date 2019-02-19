@@ -26,6 +26,19 @@
 `define H_LED_IONUM   			(4'h0)
 `define H_SW_IONUM  			(4'h1)
 `define H_PB_IONUM  			(4'h2)
+///////////////////////////////////////////////////
+/*
+These are the addresses for the memory-mapped
+interface for the ROJOBOT. 
+*/
+
+`define H_BOTINFO_ADDR			(32'h1f30000C)
+`define H_BOTCNTRL_ADDR			(32'h1f300010)
+`define H_BOTUPDT_ADDR			(32'h1f300014)
+`define H_INTACK_ADDR			(32'h1f300018)
+
+//////////////////////////////////////////////////
+
 
 //---------------------------------------------------
 // RAM addresses
@@ -39,6 +52,8 @@
 `define H_RAM_ADDR_Match 		(1'b0)
 `define H_LED_ADDR_Match		(7'h7e)
 `define H_SS_ADDR_Match         (7'h7d)
+`define H_BOT_ADDR_Match		(7'h7c)
+
 
 //---------------------------------------------------
 // AHB-Lite values used by MIPSfpga core
