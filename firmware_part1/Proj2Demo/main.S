@@ -10,36 +10,36 @@
  * 	Description:
  *  ============
  *  This program demonstrate the Rojobot world emulator.  It is modelled after
- *  the the simplebot implemented in the project 1 of the course.
- *
+ *  the the simplebot implemented in the project 1 of the course. 
+ * 
  *  The demo uses the 4 pushbuttons to control the Rojobot as follows:
  * 	btn_left	- Left Motor forward
  *  btn_up		- Left Motor reverse
  * 	btn_right	- Right Motor forward
  * 	btn_down	- Right Motor reverse
- *  If neither of the two buttons that control each motor is pushed, then the motor is stopped.
+ *  If neither of the two buttons that control each motor is pushed, then the motor is stopped. 
  *  If both of the two buttons that control each motor are pushed, the actions cancel each other
  *  leaving the motor stopped.
- *
+ * 
  *  The demo takes advantage of the wider display on the Nexys4 (8 digits vs. 4) to
  *  make the rojobot state easier for follow. The digits are mapped as follows:
  * 	digit[7:5] - compass heading
  * 	digit[4] - movement (Fwd, Rev, Stopped, turning)
  * 	digits[2:1] - column position (X) in hex
  * 	digits[1:0] - row position (Y) in hex
- *
+ * 
  *  Decimal points 5 and 4 are turned on to highlight the movement display.  Decimal point 0 toggles
  *  on and off every time the Rojobot updates its state
- *
+ * 
  *  The sensors are displayed on the LEDs.
  *
  *  The Bot Info port (PORT_BOTINFO) is a 32 bit port, which is supposed to pass the sensor, bot_info, LOCx_REG
  *  and LOCy_REG in the concatinated form as shown  BotInfo_IO = {LocX_reg,LocY_reg,Sensors_reg,BotInfo_reg}
  *  and should be driven in the same order.
- *
+ *  
  *  Also an acknowledgement bit has to be set and cleared for updating the handshaking flipflop
  * which synchronises between the 75Mhz Rojobot clock domain and the 50Mhz MIPSfpga clock domain.
- *
+ * 
  *  NOTE:  NOT ALL THE CODE IN THIS EXAMPLE IS USED.  THE EXAMPLE WAS CREATED TO GIVE YOU, THE
  *  STUDENT, AN EXAMPLE OF HOW TO CONTROL THE ROJOBOT AND NEXYS4 PERIPHERALS FROM AN EMBEDDED MIPS
  *  CPU. YOU MAY (OR NOT) FIND SOME OF THIS CODE APPLICABLE TO YOUR OTHER PROJECTS
@@ -285,29 +285,29 @@ SP_MVMTF 	= 0x1B		# Fast right turn - display lower case R
 	.align 2    # Put next label on a word boundary
 
 # 7 segment display variables
-SP_DIG0:	.byte   0
-SP_DIG1:	.byte   0
-SP_DIG2:	.byte   0
-SP_DIG3:	.byte   0
-SP_DIG4:	.byte   0
-SP_DIG5:	.byte   0
-SP_DIG6:	.byte   0
-SP_DIG7:	.byte   0
+SP_DIG0:	.byte   0		
+SP_DIG1:	.byte   0		
+SP_DIG2:	.byte   0		
+SP_DIG3:	.byte   0		
+SP_DIG4:	.byte   0		
+SP_DIG5:	.byte   0		
+SP_DIG6:	.byte   0		
+SP_DIG7:	.byte   0		
 
 #Location x variable
-LOCx_REG:	.byte   0
+LOCx_REG:	.byte   0		
 #Location y variable
-LOCy_REG:	.byte   0
+LOCy_REG:	.byte   0		
 #Bot sensors variable
-SENSOR_REG:	.byte   0
+SENSOR_REG:	.byte   0		
 #Botinfo variable
-BOTINF_REG:	.byte   0
+BOTINF_REG:	.byte   0		
 
 # Intermediate variables can be used for implementing the algorithm
 SP_SEM:		.byte   0
-SP_OLDMVMT:	.byte   0
-SP_OLDHDG:	.byte   0
-SP_OLDDP:	.byte   0
+SP_OLDMVMT:	.byte   0		
+SP_OLDHDG:	.byte   0		
+SP_OLDDP:	.byte   0		
 SP_OLDHDG1:	.byte	0
 SP_RGTCNT:	.byte	0
 SP_LEFTFL:	.byte	0
@@ -371,35 +371,36 @@ main:
 				nop
 				li	$2, FALSE
 				sb $2, SP_RGTC0NT
+				li	$s0, 0x00
 
 
 
 # ==================
 # === Main  Loop ===
 # ==================
-
+												
 main_L0:		li    $13, PORT_BOTUPDT			#	while(25) {  // main loop is an infinite loop
 				lw 	  $21, 0($13) 				#	while (upd_sysreg == 0)  {}   // loop until isr updates rojobot registers
 				beq	  $21, $0, main_L0
 				nop
-				li 	  $13, PORT_INTACK			#   Load the Acknowledgement port address
-				li 	  $21, INT_ACK				#   Set the Acknowledgement bit
+				li 	  $13, PORT_INTACK			#   Load the Acknowledgement port address 
+				li 	  $21, INT_ACK				#   Set the Acknowledgement bit 
 				sw 	  $21, 0($13)				# 	Write the Acknowledgement bit
 main_L1:
 				li    $13, PORT_BOTINFO			# 	Load the BotInfo port address
 				lw 	  $21, 0($13)				#	Read the BotInfo Register
-
+				
 				and	  $22, $21, MSKBOTINFO		#	Mask out the unwanted bits
 				sb	  $22, BOTINF_REG			# 	Update the BotInfo memory location
-
+				
 				srl	  $21, $21, 8				#	Move the original data to extract the Sensor info
 				and	  $22, $21, MSKBOTINFO		#	Mask out the unwanted bits
 				sb	  $22, SENSOR_REG			#	Store the sensor information in the Sensor register memory location
-
+				
 				srl	  $21, $21, 8				# 	Do the same for LOCy_REG
-				and	  $22, $21, MSKBOTINFO
-				sb	  $22, LOCy_REG
-
+				and	  $22, $21, MSKBOTINFO		
+				sb	  $22, LOCy_REG				
+				
 				srl	  $21, $21, 8				# 	Do the same for LOCx_REG
 				and	  $22, $21, MSKBOTINFO
 				sb	  $22, LOCx_REG
@@ -416,7 +417,7 @@ main_L2:		jal	wr_alldigits				#	write all of the digits to the display
 				lb	$2,	SENSOR_REG				#	update LEDs with new sensor information
 				jal	LED_wrleds					#
 				nop
-				li 	  $13, PORT_INTACK			#	Clear the Acknowledgement bit
+				li 	  $13, PORT_INTACK			#	Clear the Acknowledgement bit 
 				li 	  $21, FALSE
 				sw 	  $21, 0($13)
 				beq   $0, $0,	next_step		#	tell rojobot what to do next
@@ -739,55 +740,232 @@ next_step:		lb 		$25,(SENSOR_REG)
 				AND 	$2,	$2,MSKPROXR
 				AND 	$3,	$3,MSKBLKL
 
-				beq		$3, 0x07, reverse			# if true goto reverse
-				nop
-
-				beq		$t0, TRUE, turn
-				nop
-				
-				
-
-				j		forward						# jump to forward		
-				
-
-				# forward logic
-
-		
-
-forward:		li		$2,		0x33
-				li 		$25, 	PORT_BOTCTRL
-				sw		$2,		0($25)				# tell Rojobot what to do
-
 				#jal		DEB_rdbtns					# Read the pushbuttons. buttons returned in $4
 				#nop
 				#jal		btn2mot						# and calculate new MotCtl - returned in $2
 				#nop
-				beq		$0, $0, ret_next_step
+
+
+				j		switch							# jump to switch			
+				
+
+
+switch:			
+				beq		$s0, 0x00, forward
 				nop
 
-reverse:		lb		$t2, (BOTINF_REG)			# $25[2:0] = BOTINF_REG[2:0] = orientation
-   				and		$t2, $t2, MSKORIENT			# holds old orientation
+				beq		$s0, 0x01, reverse
+				nop
+
+				beq		$s0, 0x02, turn
+				nop
+
+				beq		$s0, 0x03, forward_check
+				nop
+
+				j		end								# jump to end				
+				
+
+
+
+forward:		li      $s0, 0x00								# forward state code is 0x01
+
+				lb      $3, (SENSOR_REG)                        # take sensor data
+                AND     $3, $3,MSKBLKL                          # mask sensor data
+                
+                beq     $3, 0x07, reverse_state_update          # if not on black line jump to reverse
+                nop
+
+				li		$2,		0x33
+				li 		$25, 	PORT_BOTCTRL
+				sw		$2,		0($25)							# tell Rojobot what to do
+
+				beq		$0, $0, calculate_discard_orientation 	
+				nop
+
+				reverse_state_update:
+                li      $s0, 0x01                               # reverse state code is 0x01
+				j		end										# jump to end
+
+				
+
+
+reverse:		li      $s0, 0x01								# reverse state code is 0x01
+				li		$s2, 0x00
+
+				lb      $3, (SENSOR_REG)                        # take sensor data
+                AND     $3, $3,MSKBLKL                          # mask sensor data
+                
+				lb		$t1, (BOTINF_REG)						# $25[2:0] = BOTINF_REG[2:0] = orientation
+   				and		$t1, $t1, MSKORIENT						# holds old orientation
+
 				li		$2,		0x22
 				li 		$25, 	PORT_BOTCTRL
-				sw		$2,		0($25)				# tell Rojobot to go reverse 1 step
-				li		$t0, 0x01					# flag to perform turn set to true
+				sw		$2,		0($25)							# tell Rojobot what to do
 
-				beq		$0, $0, ret_next_step
+
+                beq     $0, 0x00, turn_state_update				# if not on black line jump to reverse
+                nop
+
+				turn_state_update:
+                li      $s0, 0x02                               # reverse state code is 0x01
+
+				j		end										# jump to end
+
+
+
+turn:			li		$s0, 0x02
+				lb		$t2, (BOTINF_REG)						# $25[2:0] = BOTINF_REG[2:0] = orientation
+   				and		$t2, $t2, MSKORIENT						# holds old orientation
+				li		$s2, 0x00
+
+				bne		$t2, $t1, forward_check_state_update			
 				nop
 
-
-            
-turn:			lb		$t7, (BOTINF_REG)			# $25[2:0] = BOTINF_REG[2:0] = orientation
-   				and		$t7, $t7, MSKORIENT			# holds old orientation
-				li		$t0, 0x00
-				bne		$t2, $t7, ret_next_step		
-				nop
 				li		$2,		0x30
 				li 		$25, 	PORT_BOTCTRL
-				sw		$2,		0($25)				# tell Rojobot to go right 1 step
-				li		$t0, 0x01
-				beq		$0, $0, ret_next_step
+				sw		$2,		0($25)							# tell Rojobot to go right 1 step
+			
+				lb      $3, (SENSOR_REG)                        # take sensor data
+                AND     $3, $3,MSKBLKL                          # mask sensor data
+
+				beq		$3, 0x07,reverse_state_update_for_turn
 				nop
+
+				j		end										# jump to end
+
+				#li		$s0, 0x00
+				forward_check_state_update:
+				li		$s0, 0x03
+				j		end										# jump to end
+
+				reverse_state_update_for_turn:
+				li		$s0, 0x01
+				j		end	
+
+
+
+forward_check:	li		$s0, 0x03
+
+				lb		$t2, (BOTINF_REG)						# $25[2:0] = BOTINF_REG[2:0] = orientation
+   				and		$t2, $t2, MSKORIENT						# holds old orientation
+
+				beq		$t2, $s7, on_reject_orientation
+				nop
+
+				
+				lb      $3, (SENSOR_REG)                        # take sensor data
+                AND     $3, $3,MSKBLKL                          # mask sensor data
+                
+                beq     $3, 0x07, reverse_state_update_forcheck          # if not on black line jump to reverse
+                nop
+
+				li		$2,		0x33
+				li 		$25, 	PORT_BOTCTRL
+				sw		$2,		0($25)							# tell Rojobot what to do
+				
+				addi	$s2, $s2, 0x01							# forward count
+
+				beq		$s2, 0x13, good_to_go_to_forward
+				nop
+
+				j		end										# jump to end
+
+
+				reverse_state_update_forcheck:
+                li      $s0, 0x01                               # reverse state code is 0x01
+				j		end										# jump to end			
+
+
+				on_reject_orientation:
+				li		$s0, 0x02
+				j		end										# jump to end
+
+				good_to_go_to_forward:
+				li		$s0, 0x00
+				li		$s2, 0x00
+				j		end										# jump to end
+
+
+
+
+
+
+calculate_discard_orientation:
+			li		$s7, 0x00
+            lb      $s7, (BOTINF_REG)           # $25[2:0] = BOTINF_REG[2:0] = orientation
+            and     $s7, $s7, MSKORIENT         # holds old orientation $t0 hold the value of the stable orientation    
+
+			beq		$s7, 0x00, North_to_South
+			nop
+
+			beq		$s7, 0x01, Northeast_to_Southwest
+			nop
+
+			beq		$s7, 0x02, East_to_West
+			nop
+
+			beq		$s7, 0x03, Southeast_to_Northwest
+			nop
+
+			beq		$s7, 0x04, South_to_North
+			nop
+
+			beq		$s7, 0x05, Southwest_to_Northeast
+			nop
+
+			beq		$s7, 0x06, West_to_East
+			nop
+
+			beq		$s7, 0x00, Northwest_to_Southeast
+			nop
+
+North_to_South:
+			li		$s7, 0x04
+			j		end				# jump to end
+
+Northeast_to_Southwest:
+			li		$s7, 0x05
+			j		end				# jump to end
+
+East_to_West:
+			li		$s7, 0x06
+			j		end				# jump to end
+
+Southeast_to_Northwest:
+			li		$s7, 0x07
+			j		end				# jump to end
+
+South_to_North:
+			li		$s7, 0x00
+			j		end				# jump to end
+
+Southwest_to_Northeast:
+			li		$s7, 0x01
+			j		end				# jump to end
+
+West_to_East:
+			li		$s7, 0x02
+			j		end				# jump to end
+
+Northwest_to_Southeast:
+			li		$s7, 0x03
+			j		end				# jump to end
+
+
+
+end:			beq		$0, $0, ret_next_step
+				nop
+
+
+
+
+
+
+
+
+
+
 
 
 
