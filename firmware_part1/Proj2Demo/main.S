@@ -761,10 +761,10 @@ switch:
 				beq		$s0, 0x02, turn					# jump to turn
 				nop
 
-				beq		$s0, 0x03, orientation_check	# jump to orientation check
+				beq		$s0, 0x03, orientation_check			# jump to orientation check
 				nop
 
-				j		end								# jump to end				
+				j		end						# jump to end				
 				
 ##################################################################################################################
 # In this forward state, first we update the state code, then check whether the bot is over black line or white space
@@ -777,24 +777,24 @@ switch:
 # $s0 used to store state code
 ##################################################################################################################
 
-forward:		li      $s0, 0x00								# forward state code is 0x01
+forward:			li      $s0, 0x00						# forward state code is 0x01
 
-				lb      $3, (SENSOR_REG)                        # take sensor data
-                AND     $3, $3,MSKBLKL                          # mask sensor data
+				lb      $3, (SENSOR_REG)                        		# take sensor data
+                		AND     $3, $3,MSKBLKL                          		# mask sensor data
                 
-                beq     $3, 0x07, reverse_state_update          # if not on black line jump to reverse
-                nop
+                		beq     $3, 0x07, reverse_state_update          		# if not on black line jump to reverse
+                		nop
 
-				li		$2,		SP_LFRF							# condition to move both motor forward, i.e, forward movement of the bot
-				li 		$25, 	PORT_BOTCTRL
-				sw		$2,		0($25)							# tell Rojobot to go forward
+				li	$2,		SP_LFRF					# condition to move both motor forward, i.e, forward movement of the bot
+				li 	$25, 	PORT_BOTCTRL
+				sw	$2,		0($25)					# tell Rojobot to go forward
 
-				beq		$0, $0, calculate_discard_orientation 	# function call to calculate discard oreintation
+				beq	$0, $0, calculate_discard_orientation 			# function call to calculate discard oreintation
 				nop
 
 				reverse_state_update:
-                li      $s0, 0x01                               # reverse state code is 0x01
-				j		end										# jump to end
+                		li      $s0, 0x01                               		# reverse state code is 0x01
+				j	end							# jump to end
 
 
 ##################################################################################################################
@@ -805,27 +805,27 @@ forward:		li      $s0, 0x00								# forward state code is 0x01
 # $t1 used store current orientation
 ##################################################################################################################
 
-reverse:		li      $s0, 0x01								# reverse state code is 0x01
-				li		$s2, 0x00
+reverse:			li      $s0, 0x01						# reverse state code is 0x01
+				li	$s2, 0x00
 
-				lb      $3, (SENSOR_REG)                        # take sensor data
-                AND     $3, $3,MSKBLKL                          # mask sensor data
+				lb      $3, (SENSOR_REG)                        		# take sensor data
+                		AND     $3, $3,MSKBLKL                          		# mask sensor data
                 
-				lb		$t1, (BOTINF_REG)						# $25[2:0] = BOTINF_REG[2:0] = orientation
-   				and		$t1, $t1, MSKORIENT						# holds old orientation
+				lb	$t1, (BOTINF_REG)					# $25[2:0] = BOTINF_REG[2:0] = orientation
+   				and	$t1, $t1, MSKORIENT					# holds old orientation
 
-				li		$2,		SP_LRRR							# condition to move both motor reverse, i.e, reverse movement of the bot
-				li 		$25, 	PORT_BOTCTRL
-				sw		$2,		0($25)							# tell Rojobot to go reverse
+				li	$2,		SP_LRRR					# condition to move both motor reverse, i.e, reverse movement of the bot
+				li 	$25, 	PORT_BOTCTRL
+				sw	$2,		0($25)					# tell Rojobot to go reverse
 
 
-                beq     $0, 0x00, turn_state_update				# if back on black line jump to turn
-                nop
+                		beq     $0, 0x00, turn_state_update				# if back on black line jump to turn
+                		nop
 
 				turn_state_update:
-                li      $s0, 0x02                               # turn state code is 0x02
+                		li      $s0, 0x02		               	                # turn state code is 0x02
 
-				j		end										# jump to end
+				j	end							# jump to end
 
 #########################################################################################################################
 # This is a 45 degrees slow right turn state. When jumped after updating state code, again new orientation is retrieved
@@ -836,33 +836,33 @@ reverse:		li      $s0, 0x01								# reverse state code is 0x01
 # $t2 is used to store orientation after turn
 #########################################################################################################################
 
-turn:			li		$s0, 0x02								# state code for turn
-				lb		$t2, (BOTINF_REG)						# $25[2:0] = BOTINF_REG[2:0] = orientation
-   				and		$t2, $t2, MSKORIENT						# holds old orientation
-				li		$s2, 0x00
+turn:				li	$s0, 0x02					# state code for turn
+				lb	$t2, (BOTINF_REG)				# $25[2:0] = BOTINF_REG[2:0] = orientation
+   				and	$t2, $t2, MSKORIENT				# holds old orientation
+				li	$s2, 0x00
 
-				bne		$t2, $t1, orientation_check_state_update# check change in orientation
+				bne	$t2, $t1, orientation_check_state_update	# check change in orientation
 				nop
 
-				li		$2,		0x30							# condition to move left motor forward only, i.e, slow right turn movement of the bot
-				li 		$25, 	PORT_BOTCTRL
-				sw		$2,		0($25)							# tell Rojobot to go right 1 step
+				li	$2,		0x30				# condition to move left motor forward only, i.e, slow right turn movement of the bot
+				li 	$25, 	PORT_BOTCTRL
+				sw	$2,		0($25)				# tell Rojobot to go right 1 step
 			
-				lb      $3, (SENSOR_REG)                        # take sensor data
-                AND     $3, $3,MSKBLKL                          # mask sensor data
+				lb      $3, (SENSOR_REG)	                        # take sensor data
+                		AND     $3, $3,MSKBLKL          	                # mask sensor data
 
-				beq		$3, 0x07,reverse_state_update_for_turn	# check if not on black line
+				beq	$3, 0x07,reverse_state_update_for_turn		# check if not on black line
 				nop
 
-				j		end										# jump to end
+				j	end						# jump to end
 
-				orientation_check_state_update:					# jump to orientation check state
-				li		$s0, 0x03
-				j		end										# jump to end
+				orientation_check_state_update:				# jump to orientation check state
+				li	$s0, 0x03
+				j	end						# jump to end
 
 				reverse_state_update_for_turn:
-				li		$s0, 0x01
-				j		end	
+				li	$s0, 0x01
+				j	end	
 
 
 #########################################################################################################################
@@ -875,45 +875,45 @@ turn:			li		$s0, 0x02								# state code for turn
 
 orientation_check:	
 				
-				li		$s0, 0x03								# load state code
-				lb		$t2, (BOTINF_REG)						# $25[2:0] = BOTINF_REG[2:0] = orientation
-   				and		$t2, $t2, MSKORIENT						# holds old orientation
+				li	$s0, 0x03					# load state code
+				lb	$t2, (BOTINF_REG)				# $25[2:0] = BOTINF_REG[2:0] = orientation
+   				and	$t2, $t2, MSKORIENT				# holds old orientation
 
-				beq		$t2, $s7, on_reject_orientation			# check whether bot is having same orientation as discard orientation
+				beq	$t2, $s7, on_reject_orientation			# check whether bot is having same orientation as discard orientation
 				nop
 
 				
-				lb      $3, (SENSOR_REG)                        # take sensor data
-                AND     $3, $3,MSKBLKL                          # mask sensor data
+				lb      $3, (SENSOR_REG)                	        # take sensor data
+                		AND     $3, $3,MSKBLKL                          	# mask sensor data
                 
-                beq     $3, 0x07, reverse_state_update_forcheck # if not on black line jump to reverse
-                nop
+                		beq     $3, 0x07, reverse_state_update_forcheck 	# if not on black line jump to reverse
+                		nop
 
-				li		$2,		0x33							# if bot is on black line and on correct orientation, move forward
-				li 		$25, 	PORT_BOTCTRL
-				sw		$2,		0($25)							# tell Rojobot to go forward
+				li	$2,		0x33				# if bot is on black line and on correct orientation, move forward
+				li	$25, 	PORT_BOTCTRL
+				sw	$2,		0($25)				# tell Rojobot to go forward
 				
-				addi	$s2, $s2, 0x01							# forward count
+				addi	$s2, $s2, 0x01					# forward count
 
-				beq		$s2, 0x13, good_to_go_to_forward		# jumps to forward state
+				beq	$s2, 0x13, good_to_go_to_forward		# jumps to forward state
 				nop
 
-				j		end										# jump to end
+				j	end						# jump to end
 
 
 				reverse_state_update_forcheck:
-                li      $s0, 0x01                               # reverse state code is 0x01
-				j		end										# jump to end			
+                		li      $s0, 0x01                               	# reverse state code is 0x01
+				j	end						# jump to end			
 
 
 				on_reject_orientation:
-				li		$s0, 0x02
-				j		end										# jump to end
+				li	$s0, 0x02
+				j	end						# jump to end
 
 				good_to_go_to_forward:
-				li		$s0, 0x00								# state code for forward loaded into $s0
-				li		$s2, 0x00
-				j		end										# jump to end
+				li	$s0, 0x00					# state code for forward loaded into $s0
+				li	$s2, 0x00
+				j	end						# jump to end
 
 
 
@@ -925,69 +925,69 @@ orientation_check:
 #########################################################################################################################
 
 calculate_discard_orientation:
-				li		$s7, 0x00
+				li	$s7, 0x00
 				lb      $s7, (BOTINF_REG)           			# $25[2:0] = BOTINF_REG[2:0] = orientation
 				and     $s7, $s7, MSKORIENT         			# holds old orientation $t0 hold the value of the stable orientation    
 
-				beq		$s7, 0x00, North_to_South				# if current orientation is 0 degrees, Discard orientation is 180 degrees
+				beq	$s7, 0x00, North_to_South			# if current orientation is 0 degrees, Discard orientation is 180 degrees
 				nop
 
-				beq		$s7, 0x01, Northeast_to_Southwest		# if current orientation is 45 degrees, Discard orientation is 225 degrees
+				beq	$s7, 0x01, Northeast_to_Southwest		# if current orientation is 45 degrees, Discard orientation is 225 degrees
 				nop
 
-				beq		$s7, 0x02, East_to_West					# if current orientation is 90 degrees, Discard orientation is 270 degrees
+				beq	$s7, 0x02, East_to_West				# if current orientation is 90 degrees, Discard orientation is 270 degrees
 				nop
 
-				beq		$s7, 0x03, Southeast_to_Northwest		# if current orientation is 135 degrees, Discard orientation is 315 degrees
+				beq	$s7, 0x03, Southeast_to_Northwest		# if current orientation is 135 degrees, Discard orientation is 315 degrees
 				nop
 
-				beq		$s7, 0x04, South_to_North				# if current orientation is 180 degrees, Discard orientation is 0 degrees
+				beq	$s7, 0x04, South_to_North			# if current orientation is 180 degrees, Discard orientation is 0 degrees
 				nop
 
-				beq		$s7, 0x05, Southwest_to_Northeast		# if current orientation is 225 degrees, Discard orientation is 45 degrees
+				beq	$s7, 0x05, Southwest_to_Northeast		# if current orientation is 225 degrees, Discard orientation is 45 degrees
 				nop
 
-				beq		$s7, 0x06, West_to_East					# if current orientation is 270 degrees, Discard orientation is 90 degrees
+				beq	$s7, 0x06, West_to_East				# if current orientation is 270 degrees, Discard orientation is 90 degrees
 				nop
 
-				beq		$s7, 0x00, Northwest_to_Southeast		# if current orientation is 315 degrees, Discard orientation is 135 degrees
+				beq	$s7, 0x00, Northwest_to_Southeast		# if current orientation is 315 degrees, Discard orientation is 135 degrees
 				nop
 
 North_to_South:
-				li		$s7, 0x04								# Discard orientation is assigned value 180 degrees
-				j		end										# jump to end
+				li	$s7, 0x04					# Discard orientation is assigned value 180 degrees
+				j	end						# jump to end
 
 Northeast_to_Southwest:
-				li		$s7, 0x05								# Discard orientation is assigned value 225 degrees
-				j		end										# jump to end
+				li	$s7, 0x05					# Discard orientation is assigned value 225 degrees
+				j	end						# jump to end
 
 East_to_West:
-				li		$s7, 0x06								# Discard orientation is assigned value 270 degrees
-				j		end										# jump to end
+				li	$s7, 0x06					# Discard orientation is assigned value 270 degrees
+				j	end						# jump to end
 
 Southeast_to_Northwest:
-				li		$s7, 0x07								# Discard orientation is assigned value 315 degrees
-				j		end										# jump to end
+				li	$s7, 0x07					# Discard orientation is assigned value 315 degrees
+				j	end						# jump to end
 
 South_to_North:
-				li		$s7, 0x00								# Discard orientation is assigned value 0 degrees
-				j		end										# jump to end
+				li	$s7, 0x00					# Discard orientation is assigned value 0 degrees
+				j	end						# jump to end
 
 Southwest_to_Northeast:
-				li		$s7, 0x01								# Discard orientation is assigned value 45 degrees
-				j		end										# jump to end
+				li	$s7, 0x01					# Discard orientation is assigned value 45 degrees
+				j	end						# jump to end
 
 West_to_East:
-				li		$s7, 0x02								# Discard orientation is assigned value 90 degrees
-				j		end										# jump to end
+				li	$s7, 0x02					# Discard orientation is assigned value 90 degrees
+				j	end						# jump to end
 
 Northwest_to_Southeast:
-				li		$s7, 0x03								# Discard orientation is assigned value 135 degrees
-				j		end										# jump to end
+				li	$s7, 0x03					# Discard orientation is assigned value 135 degrees
+				j	end						# jump to end
 
 
 
-end:			beq		$0, $0, ret_next_step
+end:				beq	$0, $0, ret_next_step
 				nop
 
 
