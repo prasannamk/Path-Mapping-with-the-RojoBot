@@ -749,6 +749,11 @@ next_step:		lb 		$25,(SENSOR_REG)
 # a decision is taken to jump to perticular state or to be in the same state. 
 # We are using right turn only algorithm, which means we have to discard the the opposite orientation with which
 # the RoJo bot arrives at each turn.
+# Switch case codes for each state
+# forward - 0x00
+# reverse - 0x01
+# turn    - 0x02
+# orientation check - 0x03
 ##################################################################################################################
 
 switch:			
