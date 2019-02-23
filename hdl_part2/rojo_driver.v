@@ -1,12 +1,12 @@
-// Seven-segment display timer for the Nexys4 DDR board
+// RojoBot Driver for the Nexys4 DDR board
 //
 //  
 // Created By:	    Prasanna_Kulkarni and Atharva_Mahindarkar
-// Last Modified:	24-January-2019 (SY)
+// Last Modified:	19-February-2019 
 //
 // Revision History:
 // -----------------
-// Jan-2019   AM_PK		Created this module for the NexysDDR4 Starter Board
+// Feb-2019   AM_PK		Created this module for the NexysDDR4 Starter Board
 //
 //
 // Description:
@@ -17,13 +17,6 @@
 // output.
 // 
 ///////////////////////////////////////////////////////////////////////////
-/*
-					
-`define H_BOTINFO_ADDR			(32'h1f80000C)
-`define H_BOTCNTRL_ADDR			(32'h1f800010)
-`define H_BOTUPDT_ADDR			(32'h1f800014)
-`define H_INTACK_ADDR			(32'h1f800018)
-*/
 
 module mfp_ahb_rojo(
 	input                        HCLK,
@@ -50,14 +43,6 @@ module mfp_ahb_rojo(
     reg         HSEL_d;
     
     reg  [1:0]  HTRANS_d;
-	
-	reg  [7:0]  IO_BotCtrl_reg;
-	
-	reg  [31:0]  IO_BotInfo_reg;
-	
-	reg  [0:0]  IO_INT_ACK_reg;
-    
-	reg  [0:0]  IO_BotUpdt_Sync_reg;
 	
     wire        we;      
 	
